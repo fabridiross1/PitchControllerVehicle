@@ -118,20 +118,21 @@ Observer = ss(Aobs,Bobs,Cobs,Dobs);
 
 clear Aaug Baug Caug clear state EstFactor poleFeedb
 %% LQR Design
-Q=diag([0,0,340,230,0,0,0,0]);%8x8 ;
-R= diag([1e-9,1e-9]);
-[KLQ1,S,CLP] = lqr(veicoloPerControllo,Q,R);
+Q=diag([0,0,1000,1000,0,0,10,10]);%8x8 ;
+R= diag([1e-8,1e-8]);
+[KLQ1,~,CLP] = lqr(veicoloPerControllo,Q,R);
 KLQR = struct('KfeLQR',KLQ1(:,1:8));
-
+CLP;
 clear S CLP KLQ1 Q R
 %% LQI
 VeicoloDueUscite = ss(veicoloPerControllo.A,veicoloPerControllo.B,veicoloPerControllo.C(1:2,:),0);
-Q=diag([0,0,340,230,0,0,0,0,900,200]);%8x8 ;
-R= diag([1e-9,1e-9]);
+Q=diag([0,0,45,280,0,0,0,0,600,2000]);%8x8 ;
+R= diag([1e-8,1e-8]);
 
 [KLQInt,S,CLP] = lqi(VeicoloDueUscite,Q,R);
 KLQI = struct('KfeLQR',KLQInt(:,1:8),'KiLQR',KLQInt(:,9:10));
 
+CLP
 clear S CLP KLQInt
 
 %% Kalman Filter Design
