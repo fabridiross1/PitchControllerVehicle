@@ -20,6 +20,9 @@ StateFeedback_Integ_Obs = SimOut.StateFeedback_Integ_Obs;
 AnelloAperto = SimOut.AnelloAperto;
 LQR = SimOut.LQR;
 LQI = SimOut.LQI;
+KalmanError =  SimOut.KalmanError;
+LQGEstimatedState =  SimOut.LQGEstimatedState;
+LQGRealState =  SimOut.LQGRealState;
 
 StateFeedback_array = struct2cell(StateFeedback);
 StateFeedback_Integ_array= struct2cell(StateFeedback_Integ);
@@ -27,10 +30,13 @@ StateFeedback_Integ_Obs_array = struct2cell(StateFeedback_Integ_Obs);
 AnelloAperto_array = struct2cell(AnelloAperto);
 LQR_array = struct2cell(LQR);
 LQI_array = struct2cell(LQI);
-
-path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\Autovalori';
+KalmanError_array = struct2cell(KalmanError); 
+LQGEstimatedState_array = struct2cell(LQGEstimatedState);
+LQGRealState_array = struct2cell(LQGRealState);
 
 % 
+% path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\Autovalori';
+
 % grafici = grafico(StateFeedback_array);
 % print(grafici(1),'-dpng','-r600',fullfile(path,['AutovaloriRisposte.png']))
 % print(grafici(2),'-dpng','-r600',fullfile(path,['AutovaloriIngressi.png']))
@@ -42,10 +48,16 @@ path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\Autovalori';
 % print(grafici(2),'-dpng','-r600',fullfile(path,['AutovaloriIntegIngressi.png']))
 % print('-sHalfCar/SF+IN','-dpng','-r600',fullfile(path,['AutovaloriIntegSchema.png']))
 
-path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\LQI';
-grafici = grafico(LQI_array);
-print(grafici(1),'-dpng','-r600',fullfile(path,['LQIRisposte.png']))
-print(grafici(2),'-dpng','-r600',fullfile(path,['LQIIngressi.png']))
-print('-sHalfCar/LQI','-dpng','-r600',fullfile(path,['LQISchema.png']))
+% path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\LQI';
+% grafici = grafico(LQI_array);
+% print(grafici(1),'-dpng','-r600',fullfile(path,['LQIRisposte.png']))
+% print(grafici(2),'-dpng','-r600',fullfile(path,['LQIIngressi.png']))
+% print('-sHalfCar/LQI','-dpng','-r600',fullfile(path,['LQISchema.png']))
+
+path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\LQG';
+grafici = grafico(LQGRealState_array);
+print(grafici(1),'-dpng','-r600',fullfile(path,['LQGRisposte.png']))
+print(grafici(2),'-dpng','-r600',fullfile(path,['LQGIngressi.png']))
+print('-sHalfCar/LQG','-dpng','-r600',fullfile(path,['LQGSchema.png']))
 
 

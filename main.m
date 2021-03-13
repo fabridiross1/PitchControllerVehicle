@@ -113,7 +113,7 @@ L=place(Aaug',Caug',poleFeedb*EstFactor)';
 Aobs=Aaug-L*Caug;
 Bobs=[L, Baug];
 Cobs=eye(10);
-Dobs=zeros(10,6);
+Dobs=zeros(10,6);   
 Observer = ss(Aobs,Bobs,Cobs,Dobs);
 
 clear Aaug Baug Caug clear state EstFactor poleFeedb
@@ -129,33 +129,43 @@ VeicoloDueUscite = ss(veicoloPerControllo.A,veicoloPerControllo.B,veicoloPerCont
 Q=diag([0,0,45,280,0,0,0,0,600,2000]);%8x8 ;
 R= diag([1e-8,1e-8]);
 
-[KLQInt,S,CLP] = lqi(VeicoloDueUscite,Q,R);
-KLQI = struct('KfeLQR',KLQInt(:,1:8),'KiLQR',KLQInt(:,9:10));
+[KLQInt,~,CLP] = lqi(VeicoloDueUscite,Q,R);
+KLQI = struct('KfeLQR',KLQInt(:,1:8),'KiLQR',KLQInt(:,9:10),'CLP',CLP);
 
-CLP
 clear S CLP KLQInt
 
 %% Kalman Filter Design
-% varZc=1.0000e-9;
-% varZcDot=1.0000e-8;
-% varPhi=1.0000e-9;
-% varPhiDot=1.0000e-8;
+Tkalman = 0.0001;
 
-varIngressi = 150;
-varZc=1.0000e-8;
-varZcDot=1.0000e-7;
-varPhi=1.0000e-8;
-varPhiDot=1.0000e-7;
-varZero = 10e-10;
+varZc=1.0000e-3;
+varZcDot=1.0000e-3;
+varPhi=1.0000e-4;
+varPhiDot=1.0000e-3;
 
-[L_kalman,P_kalman,E] = lqe(veicoloConDisturbi.A,veicoloConDisturbi.B,veicoloConDisturbi.C,diag([varZc,varPhi,varZcDot,varPhiDot]),diag([varIngressi,varIngressi,varZero,varZero]));
+%Disturbi di proceso = [0,0,varZc,varPhi,0,0,varZcDot,varPhiDot];
+%Disturbi di misura =[varZc,varPhi,varZcDot,varPhiDot];
+%'z1f','z1r','zc','phi','zif_dot','zir_dot','zc_dot','phi_dot'
+%[L_kalman,P_kalman,E] = lqe(veicoloConDisturbi.A,veicoloConDisturbi.B,veicoloConDisturbi.C,diag([varIngressi,varIngressi,varZero,varZero]),diag([varZc,varPhi,varZcDot,varPhiDot]));
+[L_kalman,P_kalman,E] = lqe(veicoloConDisturbi.A,[veicoloConDisturbi.B,eye(8)],veicoloConDisturbi.C,diag([0,0,0,0,0,0,varZc,varPhi,0,0,varZcDot,varPhiDot]),diag([varZc,varPhi,varZcDot,varPhiDot]));
 
 A_kalman=veicoloConDisturbi.A-L_kalman*veicoloConDisturbi.C;
 B_kalman=[L_kalman ,veicoloConDisturbi.B];
 C_kalman=eye(8);    
 D_kalman=0;
 
-kalmanFilter = ss(A_kalman,B_kalman,C_kalman,0);
+kalmanFilter = ss(A_kalman,B_kalman,C_kalman,D_kalman);
+
+EstFactor=1.5;
+Aaug = [veicoloConDisturbi.A,veicoloConDisturbi.B(:,3:4);zeros(2,10)];
+Caug = [veicoloConDisturbi.C,zeros(4,2)];
+Baug = [veicoloConDisturbi.B(:,1:2);zeros(2,2)];
+
+L=place(Aaug',Caug',[E;[-10;-10]]*EstFactor)';
+Aobs=Aaug-L*Caug;
+Bobs=[L, Baug];
+Cobs=eye(10);
+Dobs=zeros(10,6);
+ObserverKalman = ss(Aobs,Bobs,Cobs,Dobs);
 
 %% Latex
 % [Num,Den] = tfdata(transfer(4,2),'v');

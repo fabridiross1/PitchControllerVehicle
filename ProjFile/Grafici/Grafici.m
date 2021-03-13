@@ -21,6 +21,9 @@ StateFeedback_Integ_Obs = SimOut.StateFeedback_Integ_Obs;
 AnelloAperto = SimOut.AnelloAperto;
 LQR = SimOut.LQR;
 LQI = SimOut.LQI;
+KalmanError =  SimOut.KalmanError;
+LQGEstimatedState =  SimOut.LQGEstimatedState;
+LQGRealState =  SimOut.LQGRealState;
 
 StateFeedback_array = struct2cell(StateFeedback);
 StateFeedback_Integ_array= struct2cell(StateFeedback_Integ);
@@ -28,6 +31,10 @@ StateFeedback_Integ_Obs_array = struct2cell(StateFeedback_Integ_Obs);
 AnelloAperto_array = struct2cell(AnelloAperto);
 LQR_array = struct2cell(LQR);
 LQI_array = struct2cell(LQI);
+KalmanError_array = struct2cell(KalmanError); 
+LQGEstimatedState_array = struct2cell(LQGEstimatedState));
+LQGRealState_array = struct2cell(LQGRealState);
+
 
 j=1;
 %% Senza Integratori
