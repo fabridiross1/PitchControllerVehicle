@@ -102,7 +102,7 @@ KFeedbIntegratore = struct('Kfe',K(:,1:8),'Ki',K(:,9:10),'P',[P,-15-0.1i,-15+.1i
 clear Aa Ba Ca P K
 %% Observer Design
 %%Hp =  Aaug,Baug deve essere rivelabile
-EstFactor=1.8;
+EstFactor=4;
 poleFeedb = sort(KFeedbIntegratore.P);
 
 Aaug = [veicoloConDisturbi.A,veicoloConDisturbi.B(:,3:4);zeros(2,10)];
@@ -155,7 +155,7 @@ D_kalman=0;
 
 kalmanFilter = ss(A_kalman,B_kalman,C_kalman,D_kalman);
 
-EstFactor=1.5;
+EstFactor=2.5;
 Aaug = [veicoloConDisturbi.A,veicoloConDisturbi.B(:,3:4);zeros(2,10)];
 Caug = [veicoloConDisturbi.C,zeros(4,2)];
 Baug = [veicoloConDisturbi.B(:,1:2);zeros(2,2)];

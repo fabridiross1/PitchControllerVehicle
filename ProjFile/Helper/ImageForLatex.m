@@ -53,11 +53,16 @@ LQGRealState_array = struct2cell(LQGRealState);
 % print(grafici(1),'-dpng','-r600',fullfile(path,['LQIRisposte.png']))
 % print(grafici(2),'-dpng','-r600',fullfile(path,['LQIIngressi.png']))
 % print('-sHalfCar/LQI','-dpng','-r600',fullfile(path,['LQISchema.png']))
+% 
+% path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\LQG';
+% grafici = grafico(LQGRealState_array);
+% print(grafici(1),'-dpng','-r600',fullfile(path,['LQGRisposte.png']))
+% print(grafici(2),'-dpng','-r600',fullfile(path,['LQGIngressi.png']))
+% print('-sHalfCar/LQG','-dpng','-r600',fullfile(path,['LQGSchema.png']))
 
-path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\LQG';
-grafici = grafico(LQGRealState_array);
-print(grafici(1),'-dpng','-r600',fullfile(path,['LQGRisposte.png']))
-print(grafici(2),'-dpng','-r600',fullfile(path,['LQGIngressi.png']))
-print('-sHalfCar/LQG','-dpng','-r600',fullfile(path,['LQGSchema.png']))
-
+path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\IntegOss';
+grafici = grafico(StateFeedback_Integ_Obs_array);
+print(grafici(1),'-dpng','-r600',fullfile(path,['SfInObsRisposte.png']))
+print(grafici(2),'-dpng','-r600',fullfile(path,['SfInObsIngressi.png']))
+print('-sHalfCar/SfInObs','-dpng','-r600',fullfile(path,['SfInObsSchema.png']))
 

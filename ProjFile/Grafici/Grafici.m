@@ -31,8 +31,8 @@ StateFeedback_Integ_Obs_array = struct2cell(StateFeedback_Integ_Obs);
 AnelloAperto_array = struct2cell(AnelloAperto);
 LQR_array = struct2cell(LQR);
 LQI_array = struct2cell(LQI);
-KalmanError_array = struct2cell(KalmanError); 
-LQGEstimatedState_array = struct2cell(LQGEstimatedState));
+KalmanError_array = struct2cell(KalmanError);
+LQGEstimatedState_array = struct2cell(LQGEstimatedState);
 LQGRealState_array = struct2cell(LQGRealState);
 
 
@@ -42,25 +42,25 @@ j=1;
 %     figure(j);
 %     j = j+1;
 %     hold on
-%     
+%
 %     if (i<9)
 %         plot(AnelloAperto_array{i},'DisplayName',AnelloAperto_array{i}.Name);
 %     end
 %     plot(StateFeedback_array{i},'DisplayName',StateFeedback_array{i}.Name);
 %     plot(LQR_array{i},'DisplayName',LQR_array{i}.Name);
-%     
+%
 %     grid;
 %     legend;
-%     
+%
 %     xlabel('Time [s]');
-%     
+%
 % end
-% 
+%
 % for i = (length(StateFeedback_Integ_Obs_array)-1):1:(length(StateFeedback_Integ_Obs_array))
 %     k  = k+1;
 %     subplot(2,1,k)
 %     hold on
-%     
+%
 %     if (i<9)
 %         plot(AnelloAperto_array{i},'DisplayName',AnelloAperto_array{i}.Name);
 %     end
@@ -79,6 +79,7 @@ for i = 1:1:(length(StateFeedback_Integ_Obs_array)-2)
     plot(StateFeedback_Integ_array{i},'DisplayName',StateFeedback_Integ_array{i}.Name);
     plot(StateFeedback_Integ_Obs_array{i},'DisplayName',StateFeedback_Integ_Obs_array{i}.Name);
     plot(LQI_array{i},'DisplayName',LQI_array{i}.Name);
+    
     grid;
     legend;
     xlabel('Time [s]');
