@@ -23,3 +23,6 @@ Moreover, considering uncertainties on the state variable:
 
 ## Final comparison
 Utilising a cost function (*J*), a numeric comparison between different controllers has been carried out.
+
+### Files
+To use the project just open the *.prj* file.
