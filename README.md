@@ -21,5 +21,5 @@ Moreover, considering uncertainties on the state variable:
 
 - **LQG** - *"Linear Quadratic Gaussian"* (**Kalman filter** + **LQI**)
 
-# Final comparison
+## Final comparison
 A final comparison utilising a cost function (*J*) has then been used to have a numeric comparison between the different controllers.
