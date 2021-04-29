@@ -25,4 +25,6 @@ Moreover, considering uncertainties on the state variable:
 Utilising a cost function (*J*), a numeric comparison between different controllers has been carried out.
 
 ### Files
-To use the project just open the *.prj* file.
+To use the project just open the *.prj* file. 
+
+The presentation (only in italian) is also provided in *.pdf* format.
