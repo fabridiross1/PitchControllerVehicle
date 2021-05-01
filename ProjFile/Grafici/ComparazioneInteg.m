@@ -30,7 +30,7 @@ LQI_array = struct2cell(LQI);
 j = 1;
 b = figure;
 for i= [1,3]
-    array = StateFeedback_Integ_array
+    array = StateFeedback_Integ_array;
     subplot(2,1,j);
     grid;
     hold on
@@ -39,7 +39,7 @@ for i= [1,3]
     %ylabel(array{i}.Name);
     
     
-    array = StateFeedback_array
+    array = StateFeedback_array;
     subplot(2,1,j);
     grid;
     hold on
@@ -72,6 +72,6 @@ for i = [9,10]
 end
 
 path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\AutovaloriInteg';
-print(a,'-dpng','-r600',fullfile(path,['ComparazioneUscite.png']))
-print(b,'-dpng','-r600',fullfile(path,['ComparazioneIngressi.png']))
+print(a,'-dpng','-r200',fullfile(path,['ComparazioneUscite.png']))
+print(b,'-dpng','-r200',fullfile(path,['ComparazioneIngressi.png']))
 

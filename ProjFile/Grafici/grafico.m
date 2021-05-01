@@ -25,8 +25,8 @@ for i = [2,4]
         ylabel(array{i}.Name);
 
 end
-
-b = figure(2)
+try
+b = figure(2);
 k = 1;
 for i = [9,10]
     subplot(2,1,k);
@@ -38,6 +38,8 @@ for i = [9,10]
     xlabel('Time [s]');
         ylabel(array{i}.Name);
 
+end
+catch
 end
 
 array = [a,b];

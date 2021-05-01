@@ -35,8 +35,6 @@ KalmanError_array = struct2cell(KalmanError);
 LQGEstimatedState_array = struct2cell(LQGEstimatedState);
 LQGRealState_array = struct2cell(LQGRealState);
 
-
-j=1;
 %% Senza Integratori
 % for i = 1:1:(length(StateFeedback_Integ_Obs_array)-2)
 %     figure(j);
@@ -72,30 +70,83 @@ j=1;
 % end
 
 %% Con integratori
-for i = 1:1:(length(StateFeedback_Integ_Obs_array)-2)
-    figure(j);
-    j = j+1;
+f1 = figure(1);
+j=1;
+for i = [1,2]
+    subplot(2,1,j)
     hold on
-    plot(StateFeedback_Integ_array{i},'DisplayName',StateFeedback_Integ_array{i}.Name);
-    plot(StateFeedback_Integ_Obs_array{i},'DisplayName',StateFeedback_Integ_Obs_array{i}.Name);
-    plot(LQI_array{i},'DisplayName',LQI_array{i}.Name);
+    switch i
+        case 1
+            nome = 'phi';
+        case 2
+            nome = 'phi-{dot}';
+        otherwise
+            nome  ='';
+    end
+    plot(StateFeedback_Integ_array{i},'DisplayName','F.I.');
+    plot(StateFeedback_Integ_Obs_array{i},'DisplayName','F.I.O')
+    plot(LQI_array{i},'DisplayName','LQI');
+    plot(LQGEstimatedState_array{i},'DisplayName','LQG');
     
     grid;
     legend;
+    ylabel(nome);
+    xlabel('Time [s]');
+    j = j+1;
+end
+
+
+f2 = figure(2);
+j=1;
+for i = [3,4]
+    subplot(2,1,j)
+    hold on
+    switch i
+        case 3
+            nome = 'zc';
+        case 4
+            nome = 'zc-{dot}';
+        otherwise
+            nome  ='';
+    end
+    plot(StateFeedback_Integ_array{i},'DisplayName','F.I.');
+    plot(StateFeedback_Integ_Obs_array{i},'DisplayName','F.I.O')
+    plot(LQI_array{i},'DisplayName','LQI');
+    plot(LQGEstimatedState_array{i},'DisplayName','LQG');
+    
+    grid;
+    legend;
+    ylabel(nome);
+    xlabel('Time [s]');
+    j = j+1;
+end
+
+f3 = figure;
+k=0;
+for i = [9,10]
+    k  = k+1;
+    switch i
+        case 9
+            nome = 'u-{Ant}';
+        case 10
+            nome = 'u-{Pos}';
+        otherwise
+            nome  ='';
+    end
+    subplot(2,1,k)
+    hold on
+    
+    plot(StateFeedback_Integ_array{i},'DisplayName','F.I.');
+    plot(StateFeedback_Integ_Obs_array{i},'DisplayName','F.I.O')
+    plot(LQI_array{i},'DisplayName','LQI');
+    plot(LQGEstimatedState_array{i},'DisplayName','LQG');
+    grid;
+    legend;
+    ylabel(nome);
     xlabel('Time [s]');
 end
 
-figure(j+1);
-k=0;
-for i = (length(StateFeedback_Integ_Obs_array)-1):1:(length(StateFeedback_Integ_Obs_array))
-    k  = k+1;
-    subplot(2,1,k)
-    hold on
-    plot(StateFeedback_Integ_Obs_array{i},'DisplayName',StateFeedback_Integ_Obs_array{i}.Name);
-    grid;
-    legend;
-    plot(StateFeedback_Integ_array{i},'DisplayName',StateFeedback_Integ_array{i}.Name);
-    plot(LQI_array{i},'DisplayName',LQI_array{i}.Name);
-    
-    xlabel('Time [s]');
-end
+path = 'C:\Users\fadir\OneDrive\Desktop\MatlabCC\HalfCar\Results\Comparazione\Astatici';
+print(f1,'-dpng','-r200',fullfile(path,['Stati1.png']))
+print(f2,'-dpng','-r200',fullfile(path,['Stati2.png']))
+print(f3,'-dpng','-r200',fullfile(path,['Ingressi.png']))

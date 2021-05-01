@@ -47,7 +47,7 @@ veicoloPerControllo = ss(A,B,C,0);
 
 set(veicoloConDisturbi,'inputname',{'ControlAteriore-{uf} [N]','ControlPosteriore-{ur} [N]','DisurbAnteriore-{df} [m]','DisurbPosteriore-{dr} [m]'},'OutputName', {'Zc [m]','phi [rad]','zc_{dot} [m/s]','phi_{dot} [rad/s]'},'statename',{'z1f','z1r','zc','phi','zif_dot','zir_dot','zc_dot','phi_dot'})
 set(veicoloPerControllo,'inputname',{'ControlAteriore-(uf) [n]','ControlPosteriore-(ur) [n]'},'OutputName', {'Zc','phi','zc_dot','phi_dot'},'statename',{'z1f','z1r','zc','phi','zif_dot','zir_dot','zc_dot','phi_dot'})
-clear A11 A12 A21 A22 L C B B1 B2 A L
+clear A11 A12 A21 A22 L C B B1 B2 A L m1f m1r J m2 kr kf ktr ktf cf cr
 
 %% ProprietàStrutturali
 ContrMatrix = ctrb(veicoloPerControllo.A,veicoloPerControllo.B);
@@ -55,7 +55,7 @@ if rank(ContrMatrix) ~= max(size(veicoloPerControllo.A))
     disp('Sistema non completamente controllabile');
     return
 else
-    %    disp('Sistema completamente controllabile');
+    disp('Sistema completamente controllabile');
 end
 
 ObsvMa = obsv(veicoloPerControllo.A,veicoloPerControllo.C);
@@ -63,7 +63,7 @@ if rank(ObsvMa) ~= max(size(veicoloPerControllo.A))
     disp('Sistema non completamente osservabile');
     return
 else
-    %    disp('Sistema completamente osservabile');
+    disp('Sistema completamente osservabile');
 end
 
 clear ContrMatrix ObsvMa
@@ -78,6 +78,13 @@ clear ContrMatrix ObsvMa
 %% State Feedback
 % 1-Auovalore domninante
 P = [ -4, -4.01,-20.0596-12.3175i,-20.0596+12.3175i,-44.0967-10.8565i, -44.0967+10.8565i,-20+48.9339i, -20-48.9339i];
+%P = [ -4, -4.01,-42,-41,-39,-38,-39,-39.98];
+
+%Bessel
+%k = [-4.4554+9.9715i,-6.8554+6.9278i,-8.1682+4.1057i,-8.7693+1.3616i]
+%P=[k,conj(k)];
+%P = sort(P,'descend','ComparisonMethod','real')
+
 KFeedb = place(veicoloPerControllo.A,veicoloPerControllo.B,P);
 Kfeedback = struct('Kf',KFeedb(:,1:8),'P',P);
 veicoloAutovalori = ss(veicoloPerControllo.A-veicoloPerControllo.B*KFeedb,veicoloConDisturbi.B,veicoloPerControllo.C,0);
@@ -88,7 +95,7 @@ sysItg=ss(zeros(2,2),eye(2),eye(2),0); %Integratore
 Controllo = [veicoloPerControllo.A,zeros(8,2);veicoloPerControllo.C(1:2,:),zeros(2,2)];
 if (rank(Controllo) <8)
     return;
-end;
+end
 
 Aa  =[veicoloPerControllo.A,zeros(8,2);-veicoloPerControllo.C(1:2,:),sysItg.A];
 Ba = [veicoloPerControllo.B(:,1:2);zeros(2,2)];
@@ -99,80 +106,61 @@ P = [ -4, -4.01,-20.0596-12.3175i,-20.0596+12.3175i,-44.0967-10.8565i, -44.0967+
 K = place(veicoloStateIntegral.A,veicoloStateIntegral.B,[Kfeedback.P,-12.5-0.1i,-12.5+.1i ]);
 KFeedbIntegratore = struct('Kfe',K(:,1:8),'Ki',K(:,9:10),'P',[P,-15-0.1i,-15+.1i ]);
 
-clear Aa Ba Ca P K
+clear Aa Ba Ca P K Controllo sysItg
 %% Observer Design
-%%Hp =  Aaug,Baug deve essere rivelabile
 EstFactor=4;
-poleFeedb = sort(KFeedbIntegratore.P);
+poleFeedb = Kfeedback.P;
+L=place(veicoloConDisturbi.A',veicoloConDisturbi.C',poleFeedb*EstFactor)';
+Aobs=veicoloConDisturbi.A-L*veicoloConDisturbi.C;
+Bobs=[L, veicoloConDisturbi.B];
+Cobs=eye(8);
+Dobs=zeros(8,8);
+Observer1 = ss(Aobs,Bobs,Cobs,Dobs);
 
-Aaug = [veicoloConDisturbi.A,veicoloConDisturbi.B(:,3:4);zeros(2,10)];
-Caug = [veicoloConDisturbi.C,zeros(4,2)];
-Baug = [veicoloConDisturbi.B(:,1:2);zeros(2,2)];
-
-L=place(Aaug',Caug',poleFeedb*EstFactor)';
-Aobs=Aaug-L*Caug;
-Bobs=[L, Baug];
-Cobs=eye(10);
-Dobs=zeros(10,6);   
-Observer = ss(Aobs,Bobs,Cobs,Dobs);
-
-clear Aaug Baug Caug clear state EstFactor poleFeedb
+clear Aaug Baug Caug clear state EstFactor poleFeedb L
 %% LQR Design
-Q=diag([0,0,1000,1000,0,0,10,10]);%8x8 ;
+Q=diag([0,0,800,800,0,0,10,10]);%8x8 ;
 R= diag([1e-8,1e-8]);
 [KLQ1,~,CLP] = lqr(veicoloPerControllo,Q,R);
-KLQR = struct('KfeLQR',KLQ1(:,1:8));
+KLQR = struct('KfeLQR',KLQ1(:,1:8),'Q',Q,'R',R,'CLP',CLP);
 CLP;
 clear S CLP KLQ1 Q R
 %% LQI
 VeicoloDueUscite = ss(veicoloPerControllo.A,veicoloPerControllo.B,veicoloPerControllo.C(1:2,:),0);
-Q=diag([0,0,45,280,0,0,0,0,600,2000]);%8x8 ;
-R= diag([1e-8,1e-8]);
+Q=diag([0,0,80,150,0,0,0,0,900,5000]);%8x8 ;
+R= diag([1e-9,1e-9]);
 
 [KLQInt,~,CLP] = lqi(VeicoloDueUscite,Q,R);
-KLQI = struct('KfeLQR',KLQInt(:,1:8),'KiLQR',KLQInt(:,9:10),'CLP',CLP);
+KLQI = struct('KfeLQR',KLQInt(:,1:8),'KiLQR',KLQInt(:,9:10),'Q',Q,'R',R,'CLP',CLP);
 
-clear S CLP KLQInt
+clear S CLP KLQInt Q R
 
 %% Kalman Filter Design
-Tkalman = 0.0001;
+Tkalman = 0.002;
 
-varZc=1.0000e-3;
+varZc=1.0000e-3; %% Errore di 1cm
 varZcDot=1.0000e-3;
 varPhi=1.0000e-4;
-varPhiDot=1.0000e-3;
-
-%Disturbi di proceso = [0,0,varZc,varPhi,0,0,varZcDot,varPhiDot];
-%Disturbi di misura =[varZc,varPhi,varZcDot,varPhiDot];
-%'z1f','z1r','zc','phi','zif_dot','zir_dot','zc_dot','phi_dot'
-%[L_kalman,P_kalman,E] = lqe(veicoloConDisturbi.A,veicoloConDisturbi.B,veicoloConDisturbi.C,diag([varIngressi,varIngressi,varZero,varZero]),diag([varZc,varPhi,varZcDot,varPhiDot]));
-[L_kalman,P_kalman,E] = lqe(veicoloConDisturbi.A,[veicoloConDisturbi.B,eye(8)],veicoloConDisturbi.C,diag([0,0,0,0,0,0,varZc,varPhi,0,0,varZcDot,varPhiDot]),diag([varZc,varPhi,varZcDot,varPhiDot]));
+varPhiDot=1.0000e-4;
+Q_kalman = diag([0,0,varZc,varPhi,0,0,varZcDot,varPhiDot]);
+R_kalman = diag([varZc,varPhi,varZcDot,varPhiDot]);
+[L_kalman,P_kalman,~] = lqe(veicoloConDisturbi.A,eye(8),veicoloConDisturbi.C,Q_kalman,R_kalman);
 
 A_kalman=veicoloConDisturbi.A-L_kalman*veicoloConDisturbi.C;
 B_kalman=[L_kalman ,veicoloConDisturbi.B];
-C_kalman=eye(8);    
+C_kalman=eye(8);
 D_kalman=0;
 
 kalmanFilter = ss(A_kalman,B_kalman,C_kalman,D_kalman);
-
-EstFactor=2.5;
-Aaug = [veicoloConDisturbi.A,veicoloConDisturbi.B(:,3:4);zeros(2,10)];
-Caug = [veicoloConDisturbi.C,zeros(4,2)];
-Baug = [veicoloConDisturbi.B(:,1:2);zeros(2,2)];
-
-L=place(Aaug',Caug',[E;[-10;-10]]*EstFactor)';
-Aobs=Aaug-L*Caug;
-Bobs=[L, Baug];
-Cobs=eye(10);
-Dobs=zeros(10,6);
-ObserverKalman = ss(Aobs,Bobs,Cobs,Dobs);
-
+KkalmanFilter = struct('KalmanFilter',kalmanFilter,'CLP',P_kalman,'Q',Q_kalman,'R',R_kalman);
+clear A_kalman B_kalman C_kalman D_kalman L_kalman P_kalman E R_kalman Q_kalman P_kalman
 %% Latex
 % [Num,Den] = tfdata(transfer(4,2),'v');
 % syms s
 % sys_syms=poly2sym(Num,s)/poly2sym(Den,s);
 % l = latex(sys_syms)
 
+clear A_kalman Aobs Bobs Cobs Dobs ans out
 
 
 
